@@ -10,6 +10,7 @@ public class RecommendationDto {
         this.name = name;
         this.text = text;
     }
+
     // Геттеры и сеттеры
     public String getId() { return id; }
     public String getName() { return name; }
