@@ -1,15 +1,19 @@
 package com.example.recommendation.controller;
 
-import com.example.recommendation.dto.*;
-import com.example.recommendation.rule.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
-import java.util.*;
-import java.util.stream.*;
+import com.example.recommendation.dto.RecommendationDto;
+import com.example.recommendation.rule.RecommendationRuleSet;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-// DTO для ответа API (отдельный класс)
+// DTO для ответа API (уже оформлен отдельным классом)
 class RecommendationResponseDto {
     private UUID user_id;
     private List<RecommendationDto> recommendations;
@@ -21,8 +25,6 @@ class RecommendationResponseDto {
     public void setRecommendations(List<RecommendationDto> recommendations) {
         this.recommendations = recommendations;
     }
-
-    // Конструктор, геттеры и сеттеры опущены для краткости (можно автогенерировать)
 }
 
 
@@ -32,14 +34,13 @@ public class RecommendationController {
 
     private final List<RecommendationRuleSet> ruleSets;
 
-    @Autowired
+    // Конструкторная инъекция вместо field injection
     public RecommendationController(List<RecommendationRuleSet> ruleSets) {
         this.ruleSets = ruleSets;
-        // Конструкторная инъекция — зависимости явные
     }
 
     @GetMapping("/{user_id}")
-    public ResponseEntity<RecommendationResponseDto> getRecommendations(@PathVariable UUID user_id) {
+    public ResponseEntity<RecommendationResponseDto> getRecommendations(@PathVariable("user_id") UUID user_id) {
         List<RecommendationDto> recommendations = ruleSets.stream()
                 .map(rule -> rule.check(user_id))
                 .filter(Optional::isPresent)
